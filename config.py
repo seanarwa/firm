@@ -2,7 +2,7 @@ import logging as log
 import yaml
 import os
 import cv2 as cv
-import pprint as pp
+import pprint
 import sys
 import time
 
@@ -12,6 +12,8 @@ nose_cascade = cv.CascadeClassifier()
 mouth_cascade = cv.CascadeClassifier()
 camera_port = 0
 draw_face = False
+
+pp = pprint.PrettyPrinter(indent=2)
 
 PROGRAM_START_TIMESTAMP=time.time()
 
@@ -95,7 +97,7 @@ def load(config_file_name):
 	camera_port = int(loaded_config["camera_port"])
 	draw_face = bool(loaded_config["draw_face"])
 	
-	log.info(pp.pformat(loaded_config))
+	log.info("\n" + pp.pformat(loaded_config))
 	log.info("Config loading complete.\n")
 	
 	return

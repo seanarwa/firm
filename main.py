@@ -14,7 +14,6 @@ import logging as log
 import config
 
 DATA_DIR = "data"
-pp = pprint.PrettyPrinter(indent=2)
 camera = None
 
 def graceful_shutdown():
@@ -78,15 +77,9 @@ def main():
 
 	parser = argparse.ArgumentParser(description='Entrypoint script for face-identity-registry-matching')
 	parser.add_argument('-f','--config_file', help='Path to configuration file.', default='config/config.yaml')
-	parser.add_argument('-c','--clear_data', help='Option to clear data.', action='store_true')
 	args = parser.parse_args()
 	
 	config.load(args.config_file)
-	
-	if args.clear_data:
-		log.info("Clearing data ...")
-		shutil.rmtree(DATA_DIR, ignore_errors=True)
-		log.info("Data directory deleted.\n")
 	
 	os.makedirs(os.path.join(DATA_DIR, str(int(config.PROGRAM_START_TIMESTAMP))), exist_ok=True)
 	
