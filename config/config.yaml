@@ -1,7 +1,13 @@
 version: 0.1.0
 
-draw_face: false
 camera_port: 0
+
+drawing:
+  enabled: false
+  face: true
+  eyes: true
+  nose: true
+  mouth: true
 
 logging:
   level: INFO

@@ -6,12 +6,18 @@ import pprint
 import sys
 import time
 
+# application parameters
+app_version = "0.0.0"
 face_cascade = cv.CascadeClassifier()
 eyes_cascade = cv.CascadeClassifier()
 nose_cascade = cv.CascadeClassifier()
 mouth_cascade = cv.CascadeClassifier()
 camera_port = 0
+draw_enabled = False
 draw_face = False
+draw_eyes = False
+draw_nose = False
+draw_mouth = False
 
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -56,6 +62,18 @@ def setLogging(log_level="INFO", log_file="app.log", log_timestamp=True):
 	return
 
 def load(config_file_name):
+
+	global app_version
+	global camera_port
+	global draw_enabled
+	global draw_face
+	global draw_eyes
+	global draw_nose
+	global draw_mouth
+	global face_cascade
+	global eyes_cascade
+	global nose_cascade
+	global mouth_cascade
 	
 	loaded_config = None
 	with open(config_file_name, "r") as config_file:
@@ -69,6 +87,16 @@ def load(config_file_name):
 	log_file = str(logging_config["file"])
 	log_timestamp = bool(logging_config["timestamp"])
 	setLogging(log_level, log_file, log_timestamp)
+
+	app_version = str(loaded_config["version"])
+	camera_port = int(loaded_config["camera_port"])
+
+	drawing_config = loaded_config["drawing"]
+	draw_enabled = bool(drawing_config["enabled"])
+	draw_face = bool(drawing_config["face"])
+	draw_eyes = bool(drawing_config["eyes"])
+	draw_nose = bool(drawing_config["nose"])
+	draw_mouth = bool(drawing_config["mouth"])
 
 	log.info("Loading config ...")
 	
@@ -93,9 +121,6 @@ def load(config_file_name):
 	if not mouth_cascade.load(cv.samples.findFile(mouth_cascade_path)):
 		log.error('cv cannot load mouth cascade file = ' + str(mouth_cascade_path))
 		exit(0)
-	
-	camera_port = int(loaded_config["camera_port"])
-	draw_face = bool(loaded_config["draw_face"])
 	
 	log.info("\n" + pp.pformat(loaded_config))
 	log.info("Config loading complete.\n")

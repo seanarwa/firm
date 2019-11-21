@@ -16,6 +16,11 @@ import config
 DATA_DIR = "data"
 camera = None
 
+def print_banner(app_version):
+    spaced_text = "FIRM " + str(app_version)
+    banner = spaced_text.center(78, '=')
+    return banner
+
 def graceful_shutdown():
 	log.info('Gracefully shutting down FIRM ...')
 	if camera != None:
@@ -27,7 +32,6 @@ def signal_handler(sig, frame):
 	graceful_shutdown()
 
 def getProcessedFrame(frame):
-	original_image = frame
 	frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 	frame_gray = cv.equalizeHist(frame_gray)
 	faces = config.face_cascade.detectMultiScale(
@@ -41,20 +45,24 @@ def getProcessedFrame(frame):
 		eyes = config.eyes_cascade.detectMultiScale(faceROI)
 		noses = config.nose_cascade.detectMultiScale(faceROI)
 		mouths = config.mouth_cascade.detectMultiScale(faceROI)
+		if(config.draw_enabled):
+			if(config.draw_face):
+				frame = cv.rectangle(frame, (x-10,y-10), (x+w+10,y+h+10), (255, 0, 255), thickness=2)
+			if(config.draw_eyes):
+				for (x2,y2,w2,h2) in eyes:
+					frame = cv.line(frame, (x + x2, y + y2 + h2//2), (x + x2 + w2, y + y2 + h2//2), (255, 0, 0), thickness=2)
+			if(config.draw_nose):
+				for (x2,y2,w2,h2) in noses:
+					frame = cv.circle(frame, (x + x2 + w2//2, y + y2 + h2//2), 5, (255, 0, 0), thickness=cv.FILLED)
+			if(config.draw_mouth):
+				for (x2,y2,w2,h2) in mouths:
+					frame = cv.line(frame, (x + x2, y + y2 + h2//2), (x + x2 + w2, y + y2 + h2//2), (255, 0, 0), thickness=2)
 		if (len(eyes) == 2):
 			ts = str(time.time())
 			path = os.path.join(DATA_DIR, str(int(config.PROGRAM_START_TIMESTAMP)), ts + ".png")
 			log.info("matched: " + path)
-			cropped_img = original_image[y:y+h, x:x+w]
+			cropped_img = frame[y:y+h, x:x+w]
 			cv.imwrite(path, cropped_img)
-		if(config.draw_face):
-			frame = cv.rectangle(frame, (x-10,y-10), (x+w+10,y+h+10), (255, 0, 255), thickness=2)
-			for (x2,y2,w2,h2) in eyes:
-				frame = cv.line(frame, (x + x2, y + y2 + h2//2), (x + x2 + w2, y + y2 + h2//2), (255, 0, 0), thickness=2)
-			for (x2,y2,w2,h2) in noses:
-				frame = cv.circle(frame, (x + x2 + w2//2, y + y2 + h2//2), 5, (255, 0, 0), thickness=cv.FILLED)
-			for (x2,y2,w2,h2) in mouths:
-				frame = cv.line(frame, (x + x2, y + y2 + h2//2), (x + x2 + w2, y + y2 + h2//2), (255, 0, 0), thickness=2)
 	return frame
 
 def start_webcam():
@@ -80,6 +88,8 @@ def main():
 	args = parser.parse_args()
 	
 	config.load(args.config_file)
+
+	print_banner(config.app_version)
 	
 	os.makedirs(os.path.join(DATA_DIR, str(int(config.PROGRAM_START_TIMESTAMP))), exist_ok=True)
 	
