@@ -17,9 +17,9 @@ DATA_DIR = "data"
 camera = None
 
 def print_banner(app_version):
-    spaced_text = "FIRM " + str(app_version)
+    spaced_text = " FIRM " + str(app_version) + " "
     banner = spaced_text.center(78, '=')
-    return banner
+    print(banner)
 
 def graceful_shutdown():
 	log.info('Gracefully shutting down FIRM ...')
@@ -83,8 +83,8 @@ def main():
 	
 	signal.signal(signal.SIGINT, signal_handler)
 
-	parser = argparse.ArgumentParser(description='Entrypoint script for face-identity-registry-matching')
-	parser.add_argument('-f','--config_file', help='Path to configuration file.', default='config/config.yaml')
+	parser = argparse.ArgumentParser(description='Entrypoint script for face-identity-registry-matching (FIRM)')
+	parser.add_argument('-f','--config_file', help='Path to configuration file.', default='config/app.yaml')
 	args = parser.parse_args()
 	
 	config.load(args.config_file)
