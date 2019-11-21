@@ -1,4 +1,7 @@
 version: 0.1.0
+draw_face: false
 face_cascade_file: haarcascade/haarcascade_frontalface_default.xml
 eyes_cascade_file: haarcascade/haarcascade_eye_tree_eyeglasses.xml
+nose_cascade_file: haarcascade/haarcascade_mcs_nose.xml
+mouth_cascade_file: haarcascade/haarcascade_mcs_mouth.xml
 camera_port: 0
