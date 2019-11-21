@@ -4,6 +4,7 @@ import os
 import cv2 as cv
 import pprint as pp
 import sys
+import time
 
 face_cascade = cv.CascadeClassifier()
 eyes_cascade = cv.CascadeClassifier()
@@ -12,23 +13,47 @@ mouth_cascade = cv.CascadeClassifier()
 camera_port = 0
 draw_face = False
 
-def setLogging(log_level):
+PROGRAM_START_TIMESTAMP=time.time()
 
-	log.basicConfig(filename='app.log', level=log.INFO)
+def setLogging(log_level="INFO", log_file="app.log", log_timestamp=True):
+
+	if (log_level == "DEBUG"):
+		log_level = log.DEBUG
+	elif (log_level == "INFO"):
+		log_level = log.INFO
+	elif (log_level == "WARNING"):
+		log_level = log.WARNING
+	elif (log_level == "ERROR"):
+		log_level = log.ERROR
+	elif (log_level == "CRITICAL"):
+		log_level = log.CRITICAL
+	else:
+		print("ERROR: invalid log level was specified log_level=" + str(log_level))
+		exit(0)
 
 	root = log.getLogger()
 	root.setLevel(log_level)
-
-	handler = log.StreamHandler(sys.stdout)
-	handler.setLevel(log_level)
 	formatter = log.Formatter('%(asctime)s - %(levelname)s: %(message)s')
-	handler.setFormatter(formatter)
-	root.addHandler(handler)
+
+	streamHandler = log.StreamHandler(sys.stdout)
+	streamHandler.setLevel(log_level)
+	streamHandler.setFormatter(formatter)
+	root.addHandler(streamHandler)
+
+	if(log_timestamp):
+		index = log_file.rfind(".")
+		log_file = log_file[:index] + "." + str(int(PROGRAM_START_TIMESTAMP)) + log_file[index:]
+
+	log_file_path = os.path.join("config", log_file)
+	os.makedirs("log", exist_ok=True)
+	fileHandler = log.FileHandler(log_file_path)
+	fileHandler.setLevel(log_level)
+	fileHandler.setFormatter(formatter)
+	root.addHandler(fileHandler)
 	
 	return
 
 def load(config_file_name):
-	log.info("Loading config ...")
 	
 	loaded_config = None
 	with open(config_file_name, "r") as config_file:
@@ -36,11 +61,20 @@ def load(config_file_name):
 			loaded_config = yaml.safe_load(config_file)
 		except yaml.YAMLError as e:
 			log.error(e)
-			
-	face_cascade_path = os.path.join("config", loaded_config["face_cascade_file"])
-	eyes_cascade_path = os.path.join("config", loaded_config["eyes_cascade_file"])
-	nose_cascade_path = os.path.join("config", loaded_config["nose_cascade_file"])
-	mouth_cascade_path = os.path.join("config", loaded_config["mouth_cascade_file"])
+
+	logging_config = loaded_config["logging"]
+	log_level = str(logging_config["level"])
+	log_file = str(logging_config["file"])
+	log_timestamp = bool(logging_config["timestamp"])
+	setLogging(log_level, log_file, log_timestamp)
+
+	log.info("Loading config ...")
+	
+	algorithm_config = loaded_config["algorithm"]
+	face_cascade_path = os.path.join("config", algorithm_config["face_cascade_file"])
+	eyes_cascade_path = os.path.join("config", algorithm_config["eyes_cascade_file"])
+	nose_cascade_path = os.path.join("config", algorithm_config["nose_cascade_file"])
+	mouth_cascade_path = os.path.join("config", algorithm_config["mouth_cascade_file"])
 	
 	if not face_cascade.load(cv.samples.findFile(face_cascade_path)):
 		log.error('cv cannot load face cascade file = ' + str(face_cascade_path))

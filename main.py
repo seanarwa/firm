@@ -17,12 +17,15 @@ DATA_DIR = "data"
 pp = pprint.PrettyPrinter(indent=2)
 camera = None
 
-def signal_handler(sig, frame):
+def graceful_shutdown():
 	log.info('Gracefully shutting down FIRM ...')
 	if camera != None:
 		camera.release()
 	cv.destroyAllWindows()
 	sys.exit(0)
+
+def signal_handler(sig, frame):
+	graceful_shutdown()
 
 def getProcessedFrame(frame):
 	original_image = frame
@@ -35,16 +38,16 @@ def getProcessedFrame(frame):
 		minSize=(30,30)
 	)
 	for (x,y,w,h) in faces:
-		center = (x + w//2, y + h//2)
 		faceROI = frame_gray[y:y+h,x:x+w]
 		eyes = config.eyes_cascade.detectMultiScale(faceROI)
 		noses = config.nose_cascade.detectMultiScale(faceROI)
 		mouths = config.mouth_cascade.detectMultiScale(faceROI)
 		if (len(eyes) == 2):
 			ts = str(time.time())
-			log.info("matched: " + ts)
+			path = os.path.join(DATA_DIR, str(int(config.PROGRAM_START_TIMESTAMP)), ts + ".png")
+			log.info("matched: " + path)
 			cropped_img = original_image[y:y+h, x:x+w]
-			cv.imwrite(os.path.join(DATA_DIR, ts + ".png"), cropped_img)
+			cv.imwrite(path, cropped_img)
 		if(config.draw_face):
 			frame = cv.rectangle(frame, (x-10,y-10), (x+w+10,y+h+10), (255, 0, 255), thickness=2)
 			for (x2,y2,w2,h2) in eyes:
@@ -66,7 +69,8 @@ def start_webcam():
 		frame = getProcessedFrame(frame)
 		cv.imshow('webcam', frame)
 		if cv.waitKey(1) == 27:
-			os.kill(os.getpid(), signal.SIGINT)
+			graceful_shutdown()
+	return
 
 def main():
 	
@@ -77,16 +81,14 @@ def main():
 	parser.add_argument('-c','--clear_data', help='Option to clear data.', action='store_true')
 	args = parser.parse_args()
 	
-	config.setLogging(log.INFO)
 	config.load(args.config_file)
 	
 	if args.clear_data:
 		log.info("Clearing data ...")
 		shutil.rmtree(DATA_DIR, ignore_errors=True)
 		log.info("Data directory deleted.\n")
-		os.mkdir(DATA_DIR)
-	else:
-		os.makedirs(DATA_DIR, exist_ok=True)
+	
+	os.makedirs(os.path.join(DATA_DIR, str(int(config.PROGRAM_START_TIMESTAMP))), exist_ok=True)
 	
 	start_webcam()
 
