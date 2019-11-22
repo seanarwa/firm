@@ -1,0 +1,8 @@
+jobs:
+  include:
+    - stage: client
+      script: ./client/test/travis_entrypoint.sh
+    - stage: server
+      script: ./server/test/travis_entrypoint.sh
+    - stage: db
+      script: ./db/test/travis_entrypoint.sh
