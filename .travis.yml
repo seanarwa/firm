@@ -1,3 +1,7 @@
+before_install:
+  - chmod -R 777 .
+branches:
+  only: ["master"]
 jobs:
   include:
     - stage: client
