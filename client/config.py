@@ -23,7 +23,7 @@ pp = pprint.PrettyPrinter(indent=2)
 
 PROGRAM_START_TIMESTAMP=time.time()
 
-def setLogging(log_level="INFO", log_file="app.log", log_timestamp=True):
+def set_logging(log_level="INFO", log_file="app.log", log_timestamp=True):
 
 	if (log_level == "DEBUG"):
 		log_level = log.DEBUG
@@ -86,7 +86,7 @@ def load(config_file_name):
 	log_level = str(logging_config["level"])
 	log_file = str(logging_config["file"])
 	log_timestamp = bool(logging_config["timestamp"])
-	setLogging(log_level, log_file, log_timestamp)
+	set_logging(log_level, log_file, log_timestamp)
 
 	app_version = str(loaded_config["version"])
 	camera_port = int(loaded_config["camera_port"])
