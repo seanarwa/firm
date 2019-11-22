@@ -17,9 +17,9 @@ DATA_DIR = "data"
 camera = None
 
 def print_banner(app_version):
-    spaced_text = " FIRM " + str(app_version) + " "
-    banner = spaced_text.center(78, '=')
-    print(banner)
+	spaced_text = " FIRM " + str(app_version) + " "
+	banner = spaced_text.center(78, '=')
+	print(banner)
 
 def graceful_shutdown():
 	log.info('Gracefully shutting down FIRM ...')
