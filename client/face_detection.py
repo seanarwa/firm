@@ -115,7 +115,7 @@ def extract_dlib_faces(frames):
         else:
             rgb_small_frame = frame[:, :, ::-1]
 
-        face_locations = face_recognition.face_locations(rgb_small_frame)
+        face_locations = face_recognition.face_locations(rgb_small_frame, model=config.dlib_model)
 
         for (top, right, bottom, left) in face_locations:
 
