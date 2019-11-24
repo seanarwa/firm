@@ -159,9 +159,10 @@ def get_dlib_encodings(frames):
     return results
 
 def save_frame(frame):
+    image_name = str(time.time()) + "." + config.image_type
     path = os.path.join(config.image_output_directory,
                         str(int(config.PROGRAM_START_TIMESTAMP)),
-                        str(time.time()) + "." + config.image_type)
+                        image_name)
     cv.imwrite(path, frame, config.cv_image_params)
-    log.info("Saved %s", path)
+    log.info("Saved %s", image_name)
     return
