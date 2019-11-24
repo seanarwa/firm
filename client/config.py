@@ -9,10 +9,11 @@ import time
 # application parameters
 app_name = ""
 app_version = "0.0.0"
-face_cascade = cv.CascadeClassifier()
-eyes_cascade = cv.CascadeClassifier()
-nose_cascade = cv.CascadeClassifier()
-mouth_cascade = cv.CascadeClassifier()
+extraction_layers = []
+haarcascade_face_cascade = cv.CascadeClassifier()
+haarcascade_eyes_cascade = cv.CascadeClassifier()
+haarcascade_nose_cascade = cv.CascadeClassifier()
+haarcascade_mouth_cascade = cv.CascadeClassifier()
 camera_port = 0
 draw_enabled = False
 draw_face = False
@@ -25,7 +26,7 @@ caffemodel_confidence_threshold = 1.0
 pp = pprint.PrettyPrinter(indent=2)
 
 DATA_DIR = "data"
-PROGRAM_START_TIMESTAMP=time.time()
+PROGRAM_START_TIMESTAMP = time.time()
 
 def set_logging(log_level="INFO", log_file="app.log", log_timestamp=True):
 
@@ -69,16 +70,17 @@ def load(config_file_name):
 
 	global app_name
 	global app_version
+	global extraction_layers
 	global camera_port
 	global draw_enabled
 	global draw_face
 	global draw_eyes
 	global draw_nose
 	global draw_mouth
-	global face_cascade
-	global eyes_cascade
-	global nose_cascade
-	global mouth_cascade
+	global haarcascade_face_cascade
+	global haarcascade_eyes_cascade
+	global haarcascade_nose_cascade
+	global haarcascade_mouth_cascade
 	global caffemodel_net
 	global caffemodel_confidence_threshold
 	
@@ -88,7 +90,7 @@ def load(config_file_name):
 			loaded_config = yaml.safe_load(config_file)
 		except yaml.YAMLError as e:
 			log.error(e)
-
+	
 	logging_config = loaded_config["logging"]
 	log_level = str(logging_config["level"])
 	log_file = str(logging_config["file"])
@@ -110,11 +112,13 @@ def load(config_file_name):
 	
 	algorithm_config = loaded_config["algorithm"]
 
+	extraction_layers = algorithm_config["extraction_layers"]
+
 	haarcascade_config = algorithm_config["haarcascade"]
-	face_cascade_path = os.path.join("config", haarcascade_config["face_cascade_file"])
-	eyes_cascade_path = os.path.join("config", haarcascade_config["eyes_cascade_file"])
-	nose_cascade_path = os.path.join("config", haarcascade_config["nose_cascade_file"])
-	mouth_cascade_path = os.path.join("config", haarcascade_config["mouth_cascade_file"])
+	haarcascade_face_cascade_path = os.path.join("config", haarcascade_config["face_cascade_file"])
+	haarcascade_eyes_cascade_path = os.path.join("config", haarcascade_config["eyes_cascade_file"])
+	haarcascade_nose_cascade_path = os.path.join("config", haarcascade_config["nose_cascade_file"])
+	haarcascade_mouth_cascade_path = os.path.join("config", haarcascade_config["mouth_cascade_file"])
 
 	caffemodel_config = algorithm_config["caffemodel"]
 	caffemodel_prototxt_file = os.path.join("config", caffemodel_config["prototxt_file"])
@@ -122,20 +126,20 @@ def load(config_file_name):
 	caffemodel_confidence_threshold = float(caffemodel_config["confidence_threshold"])
 	caffemodel_net = cv.dnn.readNetFromCaffe(caffemodel_prototxt_file, caffemodel_model_file)
 	
-	if not face_cascade.load(cv.samples.findFile(face_cascade_path)):
-		log.error('cv cannot load face cascade file = ' + str(face_cascade_path))
+	if not haarcascade_face_cascade.load(cv.samples.findFile(haarcascade_face_cascade_path)):
+		log.error('cv cannot load face cascade file = ' + str(haarcascade_face_cascade_path))
 		exit(0)
 	
-	if not eyes_cascade.load(cv.samples.findFile(eyes_cascade_path)):
-		log.error('cv cannot load eyes cascade file = ' + str(eyes_cascade_path))
+	if not haarcascade_eyes_cascade.load(cv.samples.findFile(haarcascade_eyes_cascade_path)):
+		log.error('cv cannot load eyes cascade file = ' + str(haarcascade_eyes_cascade_path))
 		exit(0)
 		
-	if not nose_cascade.load(cv.samples.findFile(nose_cascade_path)):
-		log.error('cv cannot load nose cascade file = ' + str(nose_cascade_path))
+	if not haarcascade_nose_cascade.load(cv.samples.findFile(haarcascade_nose_cascade_path)):
+		log.error('cv cannot load nose cascade file = ' + str(haarcascade_nose_cascade_path))
 		exit(0)
 		
-	if not mouth_cascade.load(cv.samples.findFile(mouth_cascade_path)):
-		log.error('cv cannot load mouth cascade file = ' + str(mouth_cascade_path))
+	if not haarcascade_mouth_cascade.load(cv.samples.findFile(haarcascade_mouth_cascade_path)):
+		log.error('cv cannot load mouth cascade file = ' + str(haarcascade_mouth_cascade_path))
 		exit(0)
 	
 	log.info("\n" + pp.pformat(loaded_config))

@@ -36,7 +36,7 @@ def start_webcam():
 		if not ret:
 			continue
 		frame = cv.flip(frame, 1)
-		frame = face_detection.get_caffemodel_processed_frame(frame)
+		face_detection.process(frame)
 		cv.imshow(config.app_name + " " + config.app_version, frame)
 		if cv.waitKey(1) == 27:
 			graceful_shutdown()
@@ -47,7 +47,7 @@ def main():
 	signal.signal(signal.SIGINT, signal_handler)
 
 	parser = argparse.ArgumentParser(description='Entrypoint script for face-identity-registry-matching (FIRM)')
-	parser.add_argument('-f','--config_file', help='Path to configuration file.', default='config/app.yaml')
+	parser.add_argument('-f', '--config_file', help='Path to configuration file.', default='config/app.yaml')
 	args = parser.parse_args()
 	
 	config.load(args.config_file)
