@@ -11,6 +11,8 @@ import config
 def process(frame):
 
     log.debug("Processing frame ...")
+    log.debug("Extraction layers: %s", config.extraction_layers)
+    total_exec_time = 0.0
 
     frames = [frame]
 
@@ -36,6 +38,7 @@ def process(frame):
         log.debug("Extraction layer %d - %s captured: %d",
                   layer_count, extraction_layer, len(frames))
         layer_count += 1
+        total_exec_time += exec_time
 
         if len(frames) == 0:
             return []
@@ -43,6 +46,7 @@ def process(frame):
     frames = [frame for frame in frames if len(frame) != 0]
 
     log.debug("Total face(s) extracted: %s", len(frames))
+    log.debug("Total execution time: %s", total_exec_time)
 
     return frames
 
