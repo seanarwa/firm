@@ -10,6 +10,8 @@ import config
 
 def process(frame):
 
+    log.debug("Processing frame ...")
+
     frames = [frame]
 
     layer_count = 1
@@ -39,6 +41,8 @@ def process(frame):
             return []
 
     frames = [frame for frame in frames if len(frame) != 0]
+
+    log.debug("Total face(s) extracted: %s", len(frames))
 
     return frames
 
@@ -164,5 +168,6 @@ def save_frame(frame):
                         str(int(config.PROGRAM_START_TIMESTAMP)),
                         image_name)
     cv.imwrite(path, frame, config.cv_image_params)
-    log.info("Saved %s", image_name)
+    log.debug("Saved %s", image_name)
+    log.debug("Image size: %s KB", float(os.stat(path).st_size / 1000))
     return

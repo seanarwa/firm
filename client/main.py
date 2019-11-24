@@ -52,6 +52,8 @@ def start_webcam():
 
 		cv.imshow(config.app_name + " " + config.app_version, orig_frame)
 
+		log.debug("")
+
 		if cv.waitKey(1) == 27:
 			graceful_shutdown()
 	return
