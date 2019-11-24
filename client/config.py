@@ -2,7 +2,7 @@ import logging as log
 import yaml
 import os
 import cv2 as cv
-import pprint
+import json
 import sys
 import time
 
@@ -25,8 +25,6 @@ caffemodel_confidence_threshold = 1.0
 dlib_frame_resize_enabled = False
 dlib_frame_resize_scale = 1
 dlib_model = "hog"
-
-pp = pprint.PrettyPrinter(indent=2)
 
 DATA_DIR = "data"
 PROGRAM_START_TIMESTAMP = time.time()
@@ -156,7 +154,7 @@ def load(config_file_name):
 		log.error('cv cannot load mouth cascade file = ' + str(haarcascade_mouth_cascade_path))
 		exit(0)
 	
-	log.info("\n" + pp.pformat(loaded_config))
+	log.info("\n" + json.dumps(loaded_config, indent=4))
 	log.info("Config loading complete.\n")
 	
 	return
