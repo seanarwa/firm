@@ -15,7 +15,10 @@ camera = None
 def print_banner(app_version):
 	spaced_text = " FIRM " + str(app_version) + " "
 	banner = spaced_text.center(78, '=')
-	print(banner)
+	filler = ''.center(78, '=')
+	log.info(filler)
+	log.info(banner)
+	log.info(filler)
 
 def graceful_shutdown():
 	log.info('Gracefully shutting down FIRM ...')
@@ -42,7 +45,7 @@ def start_webcam():
 
 		orig_frame = cv.flip(orig_frame, 1)
 		frames = face_detection.process(orig_frame)
-		face_detection.get_dlib_encodings(frames)
+		# face_detection.get_dlib_encodings(frames)
 
 		for frame in frames:
 			face_detection.save_frame(frame)

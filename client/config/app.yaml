@@ -11,7 +11,8 @@ drawing:
   mouth: true
 
 logging:
-  level: DEBUG
+  enabled: true
+  level: INFO
   file: ../log/app.log
   timestamp: true
 

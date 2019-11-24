@@ -96,10 +96,12 @@ def load(config_file_name):
 			log.error(e)
 	
 	logging_config = loaded_config["logging"]
+	log_enabled = bool(logging_config["enabled"])
 	log_level = str(logging_config["level"])
 	log_file = str(logging_config["file"])
 	log_timestamp = bool(logging_config["timestamp"])
-	set_logging(log_level, log_file, log_timestamp)
+	if log_enabled:
+		set_logging(log_level, log_file, log_timestamp)
 
 	app_name = str(loaded_config["name"])
 	app_version = str(loaded_config["version"])
