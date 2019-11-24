@@ -17,7 +17,7 @@ logging:
 
 algorithm:
   extraction_layers:
-    - LFW
+    - dlib
   haarcascade:
     face_cascade_file: haarcascade/haarcascade_frontalface_default.xml
     eyes_cascade_file: haarcascade/haarcascade_eye_tree_eyeglasses.xml
@@ -27,7 +27,7 @@ algorithm:
     confidence_threshold: 0.90
     prototxt_file: caffemodel/deploy.prototxt.txt
     caffemodel_file: caffemodel/res10_300x300_ssd_iter_140000.caffemodel
-  LFW:
+  dlib:
     frame_resize:
       enabled: true
       scale: 0.25

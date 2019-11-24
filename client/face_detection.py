@@ -21,8 +21,8 @@ def process(frame):
             frames = extract_haarcascade_faces(frames)
         elif extraction_layer == "caffemodel":
             frames = extract_caffemodel_faces(frames)
-        elif extraction_layer == "LFW":
-            frames = extract_LFW_faces(frames)
+        elif extraction_layer == "dlib":
+            frames = extract_dlib_faces(frames)
         else:
             log.error("Unknown extraction layer: " + str(extraction_layer))
             exit(0)
@@ -100,7 +100,7 @@ def extract_caffemodel_faces(frames):
 
     return results
 
-def extract_LFW_faces(frames):
+def extract_dlib_faces(frames):
 
     results = []
 
@@ -108,8 +108,8 @@ def extract_LFW_faces(frames):
 
         rgb_small_frame = None
 
-        if config.LFW_frame_resize_enabled:
-            resize_scale = config.LFW_frame_resize_scale
+        if config.dlib_frame_resize_enabled:
+            resize_scale = config.dlib_frame_resize_scale
             small_frame = cv.resize(frame, (0, 0), fx=resize_scale, fy=resize_scale)
             rgb_small_frame = small_frame[:, :, ::-1]
         else:
@@ -119,8 +119,8 @@ def extract_LFW_faces(frames):
 
         for (top, right, bottom, left) in face_locations:
 
-            if config.LFW_frame_resize_enabled:
-                inverted_scale = int(1 / config.LFW_frame_resize_scale)
+            if config.dlib_frame_resize_enabled:
+                inverted_scale = int(1 / config.dlib_frame_resize_scale)
                 top *= inverted_scale
                 right *= inverted_scale
                 bottom *= inverted_scale
@@ -131,19 +131,28 @@ def extract_LFW_faces(frames):
     
     return results
 
-def get_LFW_encodings(frames):
+def get_dlib_encodings(frames):
 
     start_exec_time = time.time()
 
     results = []
 
     for frame in frames:
-        face_locations = face_recognition.face_locations(frame)
-        face_encodings = face_recognition.face_encodings(frame, face_locations)
+
+        rgb_small_frame = None
+
+        if config.dlib_frame_resize_enabled:
+            resize_scale = config.dlib_frame_resize_scale
+            small_frame = cv.resize(frame, (0, 0), fx=resize_scale, fy=resize_scale)
+            rgb_small_frame = small_frame[:, :, ::-1]
+        else:
+            rgb_small_frame = frame[:, :, ::-1]
+
+        face_encodings = face_recognition.face_encodings(rgb_small_frame)
         results.extend(face_encodings)
 
     exec_time = time.time() - start_exec_time
-    log.debug("LFW encoding execution time: %s" % (exec_time))
+    log.debug("dlib encoding execution time: %s" % (exec_time))
 
     return results
 

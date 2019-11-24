@@ -1,10 +1,10 @@
-import cv2 as cv
 import argparse
-import time
 import os
 import signal
 import sys
+import cv2 as cv
 import logging as log
+import threading
 
 # local modules
 import config
@@ -42,7 +42,7 @@ def start_webcam():
 
 		orig_frame = cv.flip(orig_frame, 1)
 		frames = face_detection.process(orig_frame)
-		# encodings = face_detection.get_LFW_encodings(frames)
+		face_detection.get_dlib_encodings(frames)
 
 		for frame in frames:
 			face_detection.save_frame(frame)
