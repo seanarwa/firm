@@ -68,8 +68,6 @@ def main():
 
 	print_banner(config.app_version)
 	
-	os.makedirs(os.path.join(config.DATA_DIR, str(int(config.PROGRAM_START_TIMESTAMP))), exist_ok=True)
-	
 	start_webcam()
 
 if __name__ == "__main__":

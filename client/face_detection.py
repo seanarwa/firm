@@ -11,10 +11,10 @@ import config
 def process(frame):
 
     frames = [frame]
-    
+
     layer_count = 1
     for extraction_layer in config.extraction_layers:
-        
+
         start_exec_time = time.time()
 
         if extraction_layer == "haarcascade":
@@ -24,20 +24,22 @@ def process(frame):
         elif extraction_layer == "dlib":
             frames = extract_dlib_faces(frames)
         else:
-            log.error("Unknown extraction layer: " + str(extraction_layer))
+            log.error("Unknown extraction layer: %s", extraction_layer)
             exit(0)
 
         exec_time = time.time() - start_exec_time
 
-        log.debug("Extraction layer %d - %s execution time: %s" % (layer_count, extraction_layer, exec_time))
-        log.debug("Extraction layer %d - %s captured: %d" % (layer_count, extraction_layer, len(frames)))
+        log.debug("Extraction layer %d - %s execution time: %s", 
+                  layer_count, extraction_layer, exec_time)
+        log.debug("Extraction layer %d - %s captured: %d",
+                  layer_count, extraction_layer, len(frames))
         layer_count += 1
 
         if len(frames) == 0:
             return []
 
     frames = [frame for frame in frames if len(frame) != 0]
-    
+
     return frames
 
 def extract_haarcascade_faces(frames):
@@ -52,10 +54,10 @@ def extract_haarcascade_faces(frames):
             frame_gray,
             scaleFactor=1.4,
             minNeighbors=1,
-            minSize=(30,30)
+            minSize=(30, 30)
         )
 
-        for (x,y,w,h) in faces:
+        for (x, y, w, h) in faces:
 
             cropped_img = frame[y:y+h, x:x+w]
             results.append(cropped_img)
@@ -78,7 +80,7 @@ def extract_caffemodel_faces(frames):
 
         (h, w) = frame.shape[:2]
         blob = cv.dnn.blobFromImage(cv.resize(frame, (300, 300)), 1.0,
-            (300, 300), (104.0, 177.0, 123.0))
+                                    (300, 300), (104.0, 177.0, 123.0))
 
         config.caffemodel_net.setInput(blob)
         detections = config.caffemodel_net.forward()
@@ -94,7 +96,7 @@ def extract_caffemodel_faces(frames):
             (startX, startY, endX, endY) = box.astype("int")
 
             y = startY - 10 if startY - 10 > 10 else startY + 10
-            
+
             cropped_img = frame[startY:endY, startX:endX]
             results.append(cropped_img)
 
@@ -125,10 +127,10 @@ def extract_dlib_faces(frames):
                 right *= inverted_scale
                 bottom *= inverted_scale
                 left *= inverted_scale
-            
+
             cropped_img = frame[top:bottom, left:right]
             results.append(cropped_img)
-    
+
     return results
 
 def get_dlib_encodings(frames):
@@ -152,13 +154,14 @@ def get_dlib_encodings(frames):
         results.extend(face_encodings)
 
     exec_time = time.time() - start_exec_time
-    log.debug("dlib encoding execution time: %s" % (exec_time))
+    log.debug("dlib encoding execution time: %s", exec_time)
 
     return results
 
 def save_frame(frame):
-    ts = str(time.time())
-    path = os.path.join(config.DATA_DIR, str(int(config.PROGRAM_START_TIMESTAMP)), ts + ".png")
-    cv.imwrite(path, frame)
-    log.info("Saved " + path)
+    path = os.path.join(config.image_output_directory,
+                        str(int(config.PROGRAM_START_TIMESTAMP)),
+                        str(time.time()) + "." + config.image_type)
+    cv.imwrite(path, frame, config.cv_image_params)
+    log.info("Saved %s", path)
     return

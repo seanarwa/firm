@@ -25,8 +25,18 @@ caffemodel_confidence_threshold = 1.0
 dlib_frame_resize_enabled = False
 dlib_frame_resize_scale = 1
 dlib_model = "hog"
+image_enabled = False
+image_output_directory = "../data"
+image_type = "png"
+image_jpg_quality = 95
+image_png_compression = 3
+image_ppm_binary_format_flag = 1
+image_pgm_binary_format_flag = 1
+image_pbm_binary_format_flag = 1
+cv_image_params = []
 
-DATA_DIR = "data"
+# constants
+CONFIG_DIR = "config"
 PROGRAM_START_TIMESTAMP = time.time()
 
 def set_logging(log_level="INFO", log_file="app.log", log_timestamp=True):
@@ -58,7 +68,7 @@ def set_logging(log_level="INFO", log_file="app.log", log_timestamp=True):
 		index = log_file.rfind(".")
 		log_file = log_file[:index] + "." + str(int(PROGRAM_START_TIMESTAMP)) + log_file[index:]
 
-	log_file_path = os.path.join("config", log_file)
+	log_file_path = os.path.join(CONFIG_DIR, log_file)
 	os.makedirs("log", exist_ok=True)
 	fileHandler = log.FileHandler(log_file_path)
 	fileHandler.setLevel(log_level)
@@ -87,6 +97,15 @@ def load(config_file_name):
 	global dlib_frame_resize_enabled
 	global dlib_frame_resize_scale
 	global dlib_model
+	global image_enabled
+	global image_output_directory
+	global image_type
+	global image_jpg_quality
+	global image_png_compression
+	global image_ppm_binary_format_flag
+	global image_pgm_binary_format_flag
+	global image_pbm_binary_format_flag
+	global cv_image_params
 	
 	loaded_config = None
 	with open(config_file_name, "r") as config_file:
@@ -102,6 +121,8 @@ def load(config_file_name):
 	log_timestamp = bool(logging_config["timestamp"])
 	if log_enabled:
 		set_logging(log_level, log_file, log_timestamp)
+	
+	log.info("Loading config ...")
 
 	app_name = str(loaded_config["name"])
 	app_version = str(loaded_config["version"])
@@ -114,7 +135,29 @@ def load(config_file_name):
 	draw_nose = bool(drawing_config["nose"])
 	draw_mouth = bool(drawing_config["mouth"])
 
-	log.info("Loading config ...")
+	image_config = loaded_config["image"]
+	image_enabled = bool(image_config["enabled"])
+	image_output_directory = os.path.join(CONFIG_DIR, str(image_config["output_directory"]))
+	image_type =  str(image_config["type"])
+	image_jpg_quality = int(image_config["jpg"]["quality"])
+	image_png_compression = int(image_config["png"]["compression"])
+	if image_enabled:
+
+		os.makedirs(os.path.join(image_output_directory, str(int(PROGRAM_START_TIMESTAMP))), exist_ok=True)
+		
+		if image_type == "jpg":
+			cv_image_params = [int(cv.IMWRITE_JPEG_QUALITY), image_jpg_quality]
+		elif image_type == "png":
+			cv_image_params = [int(cv.IMWRITE_PNG_COMPRESSION), image_png_compression]
+		elif image_type == "ppm":
+			cv_image_params = [int(cv.IMWRITE_PXM_BINARY), image_ppm_binary_format_flag]
+		elif image_type == "pgm":
+			cv_image_params = [int(cv.IMWRITE_PXM_BINARY), image_pgm_binary_format_flag]
+		elif image_type == "pbm":
+			cv_image_params = [int(cv.IMWRITE_PXM_BINARY), image_pbm_binary_format_flag]
+		else:
+			log.error("Invalid image type: %s" % (image_type))
+			exit(0)
 	
 	algorithm_config = loaded_config["algorithm"]
 

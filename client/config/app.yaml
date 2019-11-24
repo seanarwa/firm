@@ -10,6 +10,29 @@ drawing:
   nose: true
   mouth: true
 
+image:
+  enabled: true
+  output_directory: ../data
+  type: jpg
+  jpg:
+    # 0 - 100 (higher means better).
+    # Default is 95.
+    quality: 95
+  png:
+    # 0 - 9 (higher means a smaller 
+    # size and longer compression time).
+    # Default is 3.
+    compression: 3
+  ppm:
+    # 0 or 1
+    binary_format_flag: 1
+  pgm:
+    # 0 or 1
+    binary_format_flag: 1
+  pbm:
+    # 0 or 1
+    binary_format_flag: 1
+
 logging:
   enabled: true
   level: INFO
