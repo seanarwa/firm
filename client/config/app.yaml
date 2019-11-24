@@ -18,6 +18,9 @@ logging:
 algorithm:
   extraction_layers:
     - caffemodel
+  frame_resize:
+    enabled: true
+    scale: 0.25
   haarcascade:
     face_cascade_file: haarcascade/haarcascade_frontalface_default.xml
     eyes_cascade_file: haarcascade/haarcascade_eye_tree_eyeglasses.xml

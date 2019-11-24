@@ -10,6 +10,10 @@ import config
 
 def process(frame):
 
+    if config.frame_resize_enabled:
+        resize_scale = config.frame_resize_scale
+        frame = cv.resize(frame, (0, 0), fx=resize_scale, fy=resize_scale)
+
     frames = [frame]
     
     layer_count = 1

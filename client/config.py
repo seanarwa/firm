@@ -22,6 +22,8 @@ draw_nose = False
 draw_mouth = False
 caffemodel_net = None
 caffemodel_confidence_threshold = 1.0
+frame_resize_enabled = False
+frame_resize_scale = 1
 
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -83,6 +85,8 @@ def load(config_file_name):
 	global haarcascade_mouth_cascade
 	global caffemodel_net
 	global caffemodel_confidence_threshold
+	global frame_resize_enabled
+	global frame_resize_scale
 	
 	loaded_config = None
 	with open(config_file_name, "r") as config_file:
@@ -113,6 +117,10 @@ def load(config_file_name):
 	algorithm_config = loaded_config["algorithm"]
 
 	extraction_layers = algorithm_config["extraction_layers"]
+
+	frame_resize_config = algorithm_config["frame_resize"]
+	frame_resize_enabled = bool(frame_resize_config["enabled"])
+	frame_resize_scale = float(frame_resize_config["scale"])
 
 	haarcascade_config = algorithm_config["haarcascade"]
 	haarcascade_face_cascade_path = os.path.join("config", haarcascade_config["face_cascade_file"])
