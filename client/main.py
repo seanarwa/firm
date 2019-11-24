@@ -29,15 +29,26 @@ def signal_handler(sig, frame):
 	graceful_shutdown()
 
 def start_webcam():
+
 	log.info("Starting webcam ...")
+
 	camera = cv.VideoCapture(config.camera_port, cv.CAP_DSHOW)
+
 	while True:
-		ret, frame = camera.read()
+
+		ret, orig_frame = camera.read()
 		if not ret:
 			continue
-		frame = cv.flip(frame, 1)
-		face_detection.process(frame)
-		cv.imshow(config.app_name + " " + config.app_version, frame)
+
+		orig_frame = cv.flip(orig_frame, 1)
+		frames = face_detection.process(orig_frame)
+		# encodings = face_detection.get_LFW_encodings(frames)
+
+		for frame in frames:
+			face_detection.save_frame(frame)
+
+		cv.imshow(config.app_name + " " + config.app_version, orig_frame)
+
 		if cv.waitKey(1) == 27:
 			graceful_shutdown()
 	return

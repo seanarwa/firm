@@ -11,13 +11,12 @@ drawing:
   mouth: true
 
 logging:
-  level: INFO
+  level: DEBUG
   file: ../log/app.log
   timestamp: true
 
 algorithm:
   extraction_layers:
-    - caffemodel
     - LFW
   haarcascade:
     face_cascade_file: haarcascade/haarcascade_frontalface_default.xml
@@ -30,5 +29,5 @@ algorithm:
     caffemodel_file: caffemodel/res10_300x300_ssd_iter_140000.caffemodel
   LFW:
     frame_resize:
-      enabled: false
+      enabled: true
       scale: 0.25

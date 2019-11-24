@@ -34,13 +34,11 @@ def process(frame):
         layer_count += 1
 
         if len(frames) == 0:
-            return
+            return []
 
-    for frame in frames:
-        if len(frame) != 0:
-            save_frame(frame)
+    frames = [frame for frame in frames if len(frame) != 0]
     
-    return
+    return frames
 
 def extract_haarcascade_faces(frames):
 
@@ -131,6 +129,22 @@ def extract_LFW_faces(frames):
             cropped_img = frame[top:bottom, left:right]
             results.append(cropped_img)
     
+    return results
+
+def get_LFW_encodings(frames):
+
+    start_exec_time = time.time()
+
+    results = []
+
+    for frame in frames:
+        face_locations = face_recognition.face_locations(frame)
+        face_encodings = face_recognition.face_encodings(frame, face_locations)
+        results.extend(face_encodings)
+
+    exec_time = time.time() - start_exec_time
+    log.debug("LFW encoding execution time: %s" % (exec_time))
+
     return results
 
 def save_frame(frame):
