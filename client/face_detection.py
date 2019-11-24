@@ -10,28 +10,37 @@ import config
 
 def process(frame):
 
-    if config.frame_resize_enabled:
-        resize_scale = config.frame_resize_scale
-        frame = cv.resize(frame, (0, 0), fx=resize_scale, fy=resize_scale)
-
     frames = [frame]
     
     layer_count = 1
     for extraction_layer in config.extraction_layers:
+        
+        start_exec_time = time.time()
 
         if extraction_layer == "haarcascade":
             frames = extract_haarcascade_faces(frames)
         elif extraction_layer == "caffemodel":
             frames = extract_caffemodel_faces(frames)
+        elif extraction_layer == "LFW":
+            frames = extract_LFW_faces(frames)
         else:
             log.error("Unknown extraction layer: " + str(extraction_layer))
             exit(0)
-        
+
+        exec_time = time.time() - start_exec_time
+
+        log.debug("Extraction layer %d - %s execution time: %s" % (layer_count, extraction_layer, exec_time))
         log.debug("Extraction layer %d - %s captured: %d" % (layer_count, extraction_layer, len(frames)))
         layer_count += 1
 
+        if len(frames) == 0:
+            return
+
     for frame in frames:
-        save_frame(frame)
+        if len(frame) != 0:
+            save_frame(frame)
+    
+    return
 
 def extract_haarcascade_faces(frames):
 
@@ -93,69 +102,36 @@ def extract_caffemodel_faces(frames):
 
     return results
 
-def get_haarcascade_processed_frame(frame):
-    frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    frame_gray = cv.equalizeHist(frame_gray)
-    faces = config.haarcascade_face_cascade.detectMultiScale(
-        frame_gray,
-        scaleFactor=1.4,
-        minNeighbors=1,
-        minSize=(30,30)
-    )
-    for (x,y,w,h) in faces:
-        faceROI = frame_gray[y:y+h,x:x+w]
-        eyes = config.haarcascade_eyes_cascade.detectMultiScale(faceROI)
-        noses = config.haarcascade_nose_cascade.detectMultiScale(faceROI)
-        mouths = config.haarcascade_mouth_cascade.detectMultiScale(faceROI)
-        if(config.draw_enabled):
-            if(config.draw_face):
-                frame = cv.rectangle(frame, (x-10,y-10), (x+w+10,y+h+10), (255, 0, 255), thickness=2)
-            if(config.draw_eyes):
-                for (x2,y2,w2,h2) in eyes:
-                    frame = cv.line(frame, (x + x2, y + y2 + h2//2), (x + x2 + w2, y + y2 + h2//2), (255, 0, 0), thickness=2)
-            if(config.draw_nose):
-                for (x2,y2,w2,h2) in noses:
-                    frame = cv.circle(frame, (x + x2 + w2//2, y + y2 + h2//2), 5, (255, 0, 0), thickness=cv.FILLED)
-            if(config.draw_mouth):
-                for (x2,y2,w2,h2) in mouths:
-                    frame = cv.line(frame, (x + x2, y + y2 + h2//2), (x + x2 + w2, y + y2 + h2//2), (255, 0, 0), thickness=2)
-        if (len(eyes) == 2):
-            cropped_img = frame[y:y+h, x:x+w]
-            save_frame(cropped_img)
-    return frame
+def extract_LFW_faces(frames):
 
-def get_caffemodel_processed_frame(frame):
+    results = []
 
-    (h, w) = frame.shape[:2]
-    blob = cv.dnn.blobFromImage(cv.resize(frame, (300, 300)), 1.0,
-        (300, 300), (104.0, 177.0, 123.0))
+    for frame in frames:
 
-    config.caffemodel_net.setInput(blob)
-    detections = config.caffemodel_net.forward()
+        rgb_small_frame = None
 
-    for i in range(0, detections.shape[2]):
+        if config.LFW_frame_resize_enabled:
+            resize_scale = config.LFW_frame_resize_scale
+            small_frame = cv.resize(frame, (0, 0), fx=resize_scale, fy=resize_scale)
+            rgb_small_frame = small_frame[:, :, ::-1]
+        else:
+            rgb_small_frame = frame[:, :, ::-1]
 
-        confidence = detections[0, 0, i, 2]
+        face_locations = face_recognition.face_locations(rgb_small_frame)
 
-        if confidence < config.caffemodel_confidence_threshold:
-            continue
+        for (top, right, bottom, left) in face_locations:
 
-        box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-        (startX, startY, endX, endY) = box.astype("int")
-
-        y = startY - 10 if startY - 10 > 10 else startY + 10
-        
-        cropped_img = frame[startY:endY, startX:endX]
-        save_frame(cropped_img)
-
-        if (config.draw_enabled):
-            text = "{:.2f}%".format(confidence * 100)
-            cv.rectangle(frame, (startX, startY), (endX, endY),
-                (0, 0, 255), 2)
-            cv.putText(frame, text, (startX, y),
-            cv.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
-
-    return frame
+            if config.LFW_frame_resize_enabled:
+                inverted_scale = int(1 / config.LFW_frame_resize_scale)
+                top *= inverted_scale
+                right *= inverted_scale
+                bottom *= inverted_scale
+                left *= inverted_scale
+            
+            cropped_img = frame[top:bottom, left:right]
+            results.append(cropped_img)
+    
+    return results
 
 def save_frame(frame):
     ts = str(time.time())
