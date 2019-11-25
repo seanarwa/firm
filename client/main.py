@@ -1,10 +1,8 @@
 import argparse
-import os
 import signal
 import sys
-import cv2 as cv
 import logging as log
-import threading
+import cv2 as cv
 
 # local modules
 import config
@@ -13,25 +11,28 @@ import face_detection
 camera = None
 
 def print_banner(app_version):
-	spaced_text = " FIRM " + str(app_version) + " "
-	banner = spaced_text.center(78, '=')
-	filler = ''.center(78, '=')
-	log.info(filler)
-	log.info(banner)
-	log.info(filler)
+    spaced_text = " FIRM " + str(app_version) + " "
+    banner = spaced_text.center(78, '=')
+    filler = ''.center(78, '=')
+    log.info(filler)
+    log.info(banner)
+    log.info(filler)
 
 def graceful_shutdown():
-	log.info('Gracefully shutting down FIRM ...')
-	if camera != None:
-		camera.stop()
-		camera.release()
-	cv.destroyAllWindows()
-	sys.exit(0)
+    log.info('Gracefully shutting down FIRM ...')
+    if camera is not None:
+        camera.release()
+    cv.destroyAllWindows()
+    sys.exit(0)
 
 def signal_handler(sig, frame):
+	log.debug("%s received", signal.Signals(2).name)
+	log.debug("Attemping to initiate graceful shutdown ...")
 	graceful_shutdown()
 
 def start_webcam():
+
+	global camera
 
 	log.info("Starting webcam ...")
 
@@ -45,7 +46,7 @@ def start_webcam():
 
 		orig_frame = cv.flip(orig_frame, 1)
 		frames = face_detection.process(orig_frame)
-		# face_detection.get_dlib_encodings(frames)
+		# encodings = face_detection.get_dlib_encodings(frames)
 
 		for frame in frames:
 			face_detection.save_frame(frame)
@@ -59,18 +60,25 @@ def start_webcam():
 	return
 
 def main():
-	
-	signal.signal(signal.SIGINT, signal_handler)
 
-	parser = argparse.ArgumentParser(description='Entrypoint script for face-identity-registry-matching (FIRM)')
-	parser.add_argument('-f', '--config_file', help='Path to configuration file.', default='config/app.yaml')
-	args = parser.parse_args()
-	
-	config.load(args.config_file)
+    signal.signal(signal.SIGINT, signal_handler)
 
-	print_banner(config.app_version)
-	
-	start_webcam()
+    parser = argparse.ArgumentParser(
+		description='Entrypoint script for face-identity-registry-matching (FIRM)'
+	)
+    parser.add_argument(
+		'-f',
+		'--config_file',
+		help='Path to configuration file.',
+		default='config/app.yaml'
+	)
+    args = parser.parse_args()
+
+    config.load(args.config_file)
+
+    print_banner(config.app_version)
+
+    start_webcam()
 
 if __name__ == "__main__":
-	main()
+    main()

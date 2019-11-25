@@ -8,6 +8,8 @@ import face_recognition
 # local modules
 import config
 
+IS_ENCODING_FACES = False
+
 def process(frame):
 
     log.debug("Processing frame ...")
@@ -33,7 +35,7 @@ def process(frame):
 
         exec_time = time.time() - start_exec_time
 
-        log.debug("Extraction layer %d - %s execution time: %s",
+        log.debug("Extraction layer %d - %s execution time: %s", 
                   layer_count, extraction_layer, exec_time)
         log.debug("Extraction layer %d - %s captured: %d",
                   layer_count, extraction_layer, len(frames))
@@ -143,9 +145,13 @@ def extract_dlib_faces(frames):
 
 def get_dlib_encodings(frames):
 
+    global IS_ENCODING_FACES
+
     if len(frames) == 0:
         return []
-
+    
+    IS_ENCODING_FACES = True
+    
     log.debug("Encoding faces ...")
 
     start_exec_time = time.time()
@@ -173,6 +179,8 @@ def get_dlib_encodings(frames):
     exec_time = time.time() - start_exec_time
     log.debug("Total face(s) encoded: %s", len(results))
     log.debug("Total execution time: %s", exec_time)
+
+    IS_ENCODING_FACES = False
 
     return results
 
