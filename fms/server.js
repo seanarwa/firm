@@ -19,7 +19,7 @@ let port = process.env.PORT || 226
 
 // Root path
 app.get('/', (req,res) => {
-    return res.end('firm-ds is running');
+    return res.end('firm-fms is running');
 });
 
 app.post('/',
@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 // start the server
 var server = app.listen(port,() => {
     var port = server.address().port;
-    console.log(`firm-ds started on port ${port}`);
+    console.log(`firm-fms started on port ${port}`);
 });
   
 module.exports = app;

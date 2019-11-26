@@ -1,7 +1,7 @@
 {
-  "name": "firm-ds",
+  "name": "firm-fms",
   "version": "0.3.0-SNAPSHOT",
-  "description": "FIRM Data Service",
+  "description": "FIRM Face Matching Service",
   "main": "server.js",
   "directories": {
     "test": "test"
