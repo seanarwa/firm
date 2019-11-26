@@ -12,6 +12,10 @@ drawing:
   nose: true
   mouth: true
 
+data_service:
+  enabled: true
+  host: http://localhost:226
+
 image:
   enabled: true
   output_directory: ../data

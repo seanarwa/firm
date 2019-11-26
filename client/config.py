@@ -34,6 +34,8 @@ image_ppm_binary_format_flag = 1
 image_pgm_binary_format_flag = 1
 image_pbm_binary_format_flag = 1
 cv_image_params = []
+data_service_enabled = False
+data_service_host = "http://localhost:226"
 
 # constants
 CONFIG_DIR = "config"
@@ -106,6 +108,8 @@ def load(config_file_name):
     global image_pgm_binary_format_flag
     global image_pbm_binary_format_flag
     global cv_image_params
+    global data_service_enabled
+    global data_service_host
 
     loaded_config = None
     with open(config_file_name, "r") as config_file:
@@ -135,15 +139,23 @@ def load(config_file_name):
     draw_nose = bool(drawing_config["nose"])
     draw_mouth = bool(drawing_config["mouth"])
 
+    data_service_config = loaded_config["data_service"]
+    data_service_enabled = bool(data_service_config["enabled"])
+    data_service_host = str(data_service_config["host"])
+
     image_config = loaded_config["image"]
     image_enabled = bool(image_config["enabled"])
-    image_output_directory = os.path.join(CONFIG_DIR, str(image_config["output_directory"]))
+    image_output_directory = os.path.join(
+        CONFIG_DIR, 
+        str(image_config["output_directory"]), 
+        str(int(PROGRAM_START_TIMESTAMP))
+    )
     image_type =  str(image_config["type"])
     image_jpg_quality = int(image_config["jpg"]["quality"])
     image_png_compression = int(image_config["png"]["compression"])
     if image_enabled:
 
-        os.makedirs(os.path.join(image_output_directory, str(int(PROGRAM_START_TIMESTAMP))), exist_ok=True)
+        os.makedirs(image_output_directory, exist_ok=True)
 
         if image_type == "jpg":
             cv_image_params = [int(cv.IMWRITE_JPEG_QUALITY), image_jpg_quality]

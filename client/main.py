@@ -7,6 +7,7 @@ import cv2 as cv
 # local modules
 import config
 import face_detection
+import sender
 
 camera = None
 
@@ -49,7 +50,8 @@ def start_webcam():
 		# encodings = face_detection.get_dlib_encodings(frames)
 
 		for frame in frames:
-			face_detection.save_frame(frame)
+			image_file_name = face_detection.save_frame(frame)
+			sender.send_image(image_file_name)
 
 		cv.imshow(config.app_name + " " + config.app_version, orig_frame)
 
@@ -61,24 +63,30 @@ def start_webcam():
 
 def main():
 
-    signal.signal(signal.SIGINT, signal_handler)
+	signal.signal(signal.SIGINT, signal_handler)
 
-    parser = argparse.ArgumentParser(
+	parser = argparse.ArgumentParser(
 		description='Entrypoint script for face-identity-registry-matching (FIRM)'
 	)
-    parser.add_argument(
+	parser.add_argument(
 		'-f',
 		'--config_file',
 		help='Path to configuration file.',
 		default='config/app.yaml'
 	)
-    args = parser.parse_args()
+	args = parser.parse_args()
 
-    config.load(args.config_file)
+	config.load(args.config_file)
 
-    print_banner(config.app_version)
+	print_banner(config.app_version)
 
-    start_webcam()
+	success = True
+
+	if config.data_service_enabled:
+		success = sender.connect()
+
+	if success:
+		start_webcam()
 
 if __name__ == "__main__":
     main()
