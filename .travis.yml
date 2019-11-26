@@ -11,7 +11,9 @@ jobs:
   include:
     - stage: client
       script: ./client/test/travis_entrypoint.sh
-    - stage: server
-      script: ./server/test/travis_entrypoint.sh
+    - stage: ds
+      script: ./ds/test/travis_entrypoint.sh
     - stage: db
       script: ./db/test/travis_entrypoint.sh
+    - stage: ui
+      script: ./ui/test/travis_entrypoint.sh
