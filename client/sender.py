@@ -67,3 +67,16 @@ def send_request(host, data, headers):
         log.error("Error occured when trying to send frame to firm-fms, status code: %s", response.status_code)
 
     return
+
+def send_encodings(encodings):
+
+    log.debug("Sending encodings to firm-fms ...")
+
+    data = {'encodings': encodings}
+    response = requests.post(config.data_service_host, data=json.dumps(data), headers=HTTP_HEADERS)
+    if response.status_code == 200:
+        log.debug("Frame successfully sent to firm-fms")
+    else:
+        log.error("Error occured when trying to send frame to firm-fms, status code: %s", response.status_code)
+
+    return

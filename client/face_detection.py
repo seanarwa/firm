@@ -8,13 +8,11 @@ import face_recognition
 # local modules
 import config
 
-def process(frame):
+def process(frames):
 
     log.debug("Processing frame ...")
     log.debug("Extraction layers: %s", config.extraction_layers)
     total_exec_time = 0.0
-
-    frames = [frame]
 
     layer_count = 1
     for extraction_layer in config.extraction_layers:
@@ -175,11 +173,3 @@ def get_dlib_encodings(frames):
     log.debug("Total execution time: %s", exec_time)
 
     return results
-
-def save_frame(frame):
-    image_name = str(time.time()) + "." + config.image_type
-    path = os.path.join(config.image_output_directory, image_name)
-    cv.imwrite(path, frame, config.cv_image_params)
-    log.debug("Locally saved %s", image_name)
-    log.debug("Image size: %s KB", float(os.stat(path).st_size / 1000))
-    return image_name
