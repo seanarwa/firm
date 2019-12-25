@@ -38,7 +38,6 @@ data_service_enabled = False
 data_service_host = "http://localhost:226"
 
 # constants
-CONFIG_DIR = "config"
 PROGRAM_START_TIMESTAMP = time.time()
 
 def set_logging(log_level="INFO", log_file="app.log", log_timestamp=True):
@@ -68,9 +67,8 @@ def set_logging(log_level="INFO", log_file="app.log", log_timestamp=True):
 
     if(log_timestamp):
         index = log_file.rfind(".")
-        log_file = log_file[:index] + "." + str(int(PROGRAM_START_TIMESTAMP)) + log_file[index:]
+        log_file_path = log_file[:index] + "." + str(int(PROGRAM_START_TIMESTAMP)) + log_file[index:]
 
-    log_file_path = os.path.join(CONFIG_DIR, log_file)
     os.makedirs("log", exist_ok=True)
     fileHandler = log.FileHandler(log_file_path)
     fileHandler.setLevel(log_level)
@@ -146,7 +144,6 @@ def load(config_file_name):
     image_config = loaded_config["image"]
     image_enabled = bool(image_config["enabled"])
     image_output_directory = os.path.join(
-        CONFIG_DIR, 
         str(image_config["output_directory"]), 
         str(int(PROGRAM_START_TIMESTAMP))
     )

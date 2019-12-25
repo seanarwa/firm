@@ -18,7 +18,7 @@ data_service:
 
 image:
   enabled: true
-  output_directory: ../data
+  output_directory: data/
   type: jpg  # Default is jpg
   jpg:
     # 0 - 100 (higher means better).
@@ -40,7 +40,7 @@ image:
 logging:
   enabled: true
   level: DEBUG  # Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  file: ../log/app.log
+  file: log/app.log
   timestamp: true  # Will attach timestamp after each log file if true
 
 algorithm:

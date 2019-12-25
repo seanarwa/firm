@@ -52,6 +52,7 @@ def start_webcam():
 		for frame in frames:
 			image_file_name = face_detection.save_frame(frame)
 			sender.send_image(image_file_name)
+			# sender.send_frame(frame)
 
 		cv.imshow(config.app_name + " " + config.app_version, orig_frame)
 
