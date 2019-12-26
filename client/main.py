@@ -6,7 +6,6 @@ import time
 import logging as log
 from queue import Queue
 from threading import Thread
-from multiprocessing import Process
 import cv2 as cv
 
 # local modules
@@ -32,6 +31,7 @@ class Worker(Thread):
 				frames = face_detection.process(frames)
 				for frame in frames:
 					image_file_name = save_frame(frame)
+					# sender.send_frame(frame)
 					sender.send_image(image_file_name)
 			finally:
 				self.queue.task_done()

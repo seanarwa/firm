@@ -34,7 +34,7 @@ def send_image(image_file_name):
 
     image_file_path = os.path.join(config.image_output_directory, image_file_name)
     with open(image_file_path, 'rb') as img_file:
-        files = {'image': img_file}
+        files = {'image': (image_file_name, img_file.read())}
         data = {'name': image_file_name}
         response = requests.post(config.data_service_host, files=files, data=data)
         if response.status_code == 200:
@@ -48,7 +48,7 @@ def send_frame(frame):
 
     log.debug("Sending frame to firm-fms ...")
 
-    data = {'image': 'hello'}
+    data = {'image': frame.tostring()}
     response = requests.post(config.data_service_host, data=json.dumps(data), headers=HTTP_HEADERS)
     if response.status_code == 200:
         log.debug("Frame successfully sent to firm-fms")
