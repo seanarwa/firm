@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 // start the server
 var server = app.listen(port,() => {
     var port = server.address().port;
-    console.log(`firm-db REST API started on port ${port}`);
+    console.log(`firm-ds REST API started on port ${port}`);
 });
   
 module.exports = app;
