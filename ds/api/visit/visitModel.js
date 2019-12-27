@@ -15,6 +15,8 @@ let visitSchema = new Schema(
       data: Buffer,
       contentType: String
     },
+    imageEncoding: [Number],
+    imageNormalizedEncoding: [Number],
     imageConfidence: {
       type: Number,
       min: 0,
