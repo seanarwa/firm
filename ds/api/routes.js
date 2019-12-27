@@ -1,7 +1,8 @@
 let express = require('express');
 
 let models = [
-	"image",
+    "visit",
+    "enrollment",
 	"person"
 ];
 

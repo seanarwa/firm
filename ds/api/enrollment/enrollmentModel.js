@@ -2,12 +2,17 @@ let mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-let imageSchema = new Schema(
+let enrollmentSchema = new Schema(
   {
     // id: ID! is auto created by the database called "_id"
     image: {
       data: Buffer,
       contentType: String
+    },
+    imageConfidence: {
+      type: Number,
+      min: 0,
+      max: 100
     }
   },
   {
@@ -15,9 +20,9 @@ let imageSchema = new Schema(
   }
 );
 
-const image = mongoose.model("image", imageSchema);
-module.exports = image;
+const enrollment = mongoose.model("Enrollment", enrollmentSchema);
+module.exports = enrollment;
 
 // extra codes
 // after line 3: const AutoIncrement = require('mongoose-sequence')(mongoose);
-// after line 17: imageSchema.plugin(AutoIncrement, {inc_field: 'imageId'});
+// after line 17: enrollmentSchema.plugin(AutoIncrement, {inc_field: 'enrollmentId'});
