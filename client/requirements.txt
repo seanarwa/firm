@@ -16,7 +16,7 @@ opencv_python == 4.1.1.26
 
 # test\test_unit_config.py: 1
 # test\test_unit_main.py: 1
-pytest == 5.3.0
+pytest == 5.3.2
 
 # sender.py: 2
 requests == 2.21.0
