@@ -1,0 +1,21 @@
+version: 0.2.0-SNAPSHOT
+
+camera_port: 11
+
+drawing:
+  enabled: true
+  face: true
+  eyes: true
+  nose: true
+  mouth: true
+
+logging:
+  level: CRITICAL
+  file: ../result/test_unit_config_sample.log
+  timestamp: false
+
+algorithm:
+  face_cascade_file: haarcascade/haarcascade_frontalface_default.xml
+  eyes_cascade_file: haarcascade/haarcascade_eye_tree_eyeglasses.xml
+  nose_cascade_file: haarcascade/haarcascade_mcs_nose.xml
+  mouth_cascade_file: haarcascade/haarcascade_mcs_mouth.xml
