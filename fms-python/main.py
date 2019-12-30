@@ -117,10 +117,10 @@ def main():
 	)
 	args = parser.parse_args()
 
-	queue = multiprocessing.Queue()
-	pool = multiprocessing.Pool(multiprocessing.cpu_count(), worker, (queue, ))
-
 	config.load(args.config_file)
+
+	queue = multiprocessing.Queue()
+	pool = multiprocessing.Pool(config.processing_num_of_workers, worker, (queue, ))
 
 	print_banner(config.app_name, config.app_version)
 

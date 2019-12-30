@@ -37,6 +37,9 @@ logging:
   file: log/app.log
   timestamp: true  # Will attach timestamp after each log file if true
 
+processing:
+  num_of_workers: 30
+
 algorithm:
     
   dlib:

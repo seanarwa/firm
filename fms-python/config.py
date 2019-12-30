@@ -26,6 +26,7 @@ cv_image_params = []
 services_mongodb = "http://localhost:443"
 services_elasticsearch = ""
 services_redis = "redis://localhost:6379"
+processing_num_of_workers = 1
 
 # constants
 PROGRAM_START_TIMESTAMP = time.time()
@@ -89,6 +90,7 @@ def load(config_file_name):
     global services_mongodb
     global services_elasticsearch
     global services_redis
+    global processing_num_of_workers
 
     loaded_config = None
     with open(config_file_name, "r") as config_file:
@@ -145,6 +147,9 @@ def load(config_file_name):
         else:
             log.error("Invalid image type: %s" % (image_type))
             exit(0)
+
+    processing_config = loaded_config["processing"]
+    processing_num_of_workers = processing_config["num_of_workers"]
 
     algorithm_config = loaded_config["algorithm"]
 
