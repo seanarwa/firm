@@ -12,7 +12,7 @@ numpy == 1.16.3
 # face_detection.py: 4
 # face_encoding.py: 3
 # main.py: 9
-opencv_python == 4.1.1.26
+opencv_python == 4.2.0.32
 
 # test\test_unit_config.py: 1
 # test\test_unit_main.py: 1
