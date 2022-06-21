@@ -6,7 +6,7 @@
 face_recognition == 1.2.3
 
 # face_detection.py: 5
-numpy == 1.16.3
+numpy == 1.22.0
 
 # config.py: 4
 # face_detection.py: 4
